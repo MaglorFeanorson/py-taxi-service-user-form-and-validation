@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import DriverCreationForm, DriverLicenseUpdateForm, CarForm
-from .models import Driver, Car, Manufacturer
+
+from taxi.forms import CarForm, DriverCreationForm, DriverLicenseUpdateForm
+from taxi.models import Car, Driver, Manufacturer
 
 
 @login_required
@@ -104,7 +105,7 @@ class LicenseNumberUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 class AssignDriverView(LoginRequiredMixin, generic.View):
     def post(self, request, *args, **kwargs):
-        car = Car.objects.get(pk=kwargs["pk"])
+        car = get_object_or_404(Car, pk=kwargs["pk"])
         driver = request.user
 
         if driver in car.drivers.all():
